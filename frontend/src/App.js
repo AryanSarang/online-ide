@@ -3,6 +3,10 @@ import './App.css';
 import React, { useState, useEffect } from "react";
 import stubs from "./defaultStubs";
 import moment from 'moment';
+import CodeMirror from '@uiw/react-codemirror';
+import { cpp } from "@codemirror/lang-cpp";
+import { js } from "@codemirror/lang-javascript";
+import {py} from "@codemirror/lang-python";
 
 function App() {
 
@@ -16,31 +20,31 @@ function App() {
   useEffect(() => {
     const defaultLang = localStorage.getItem("default-language") || "cpp"
     setLanguage(defaultLang);
-  },[]);
+  }, []);
 
   useEffect(() => {
     setcode(stubs[language]);
   }, [language]);
 
-  const setDefaultLanguage =()=>{
-    localStorage.setItem("default-language",language);
+  const setDefaultLanguage = () => {
+    localStorage.setItem("default-language", language);
     console.log(`${language} set as default language.`)
   }
 
-  const renderTimeDetails = ()=>{
-    if(!jobDetails){
+  const renderTimeDetails = () => {
+    if (!jobDetails) {
       return "";
     }
     let result = '';
-    let {submittedAt, completedAt, startedAt}= jobDetails;
+    let { submittedAt, completedAt, startedAt } = jobDetails;
     submittedAt = moment(submittedAt).toString()
     result += `Submitted At: ${submittedAt}`
-    if(!completedAt || !startedAt){
-      return result; 
+    if (!completedAt || !startedAt) {
+      return result;
     }
     const start = moment(startedAt);
-    const end= moment(completedAt);
-    const executionTime = end.diff(start,'seconds', true);
+    const end = moment(completedAt);
+    const executionTime = end.diff(start, 'seconds', true);
     result += `Execution Time: ${executionTime}s`
     return result;
   }
@@ -89,7 +93,7 @@ function App() {
       }
     }
   };
-  
+
   return (
 
     <div className="App">
@@ -101,8 +105,7 @@ function App() {
           let response = window.confirm(
             "WARNING: Switching the language, will remove your current code. Do you wish to proceed?"
           )
-          if(response)
-          {
+          if (response) {
             setLanguage(e.target.value);
           }
         }}>
@@ -111,13 +114,23 @@ function App() {
           <option value="js">Javascript</option>
         </select>
       </div>
-      <br/>
+      <br />
       <div>
-      <button onClick={setDefaultLanguage}>Set Default</button>
+        <button onClick={setDefaultLanguage}>Set Default</button>
       </div>
       <br />
-      <textarea rows="20" cols="75" value={code}
-        onChange={(e) => { setcode(e.target.value); }}></textarea>
+
+     {/* <textarea rows="20" cols="75" value={code}
+        onChange={(e) => { setcode(e.target.value); }}>
+      </textarea> */}
+      <CodeMirror
+        value={code}
+        height="200px"
+        theme="dark"
+        extensions={[cpp()]}
+        onChange={(e) => { setcode(e.target.value); }}
+      />
+
       <br />
       <button onClick={handleSubmit}>submit</button>
 
